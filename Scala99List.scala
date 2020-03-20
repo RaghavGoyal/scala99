@@ -2,30 +2,46 @@ import scala.util.Random
 
 object Scala99List {
 
-  def lastSecondElement(list: List[Int]){
-    println("last second element is: ")
-    println(list.init.last)
+  def lastElemet(list: List[Int]): Int = {
+    list match{
+      case a :: Nil => a
+      case _::b => lastElemet(b)
+    }
   }
 
-  def lastElemet(list: List[Int]) {
-    println("last element of list is:")
-    println(list.last)
+  def lastSecondElement(list: List[Int]): Int = {
+    list match{
+      case a::(_::Nil) => a
+      case a::b => lastSecondElement(b)
+    }
   }
 
   def findNElement(i: Int, list: List[Int]):Int={
-    list(i)
+    list match{
+      case a::b if i==0 => a
+      case a::b => findNElement(i-1,b)
+    }
   }
 
-  def noOfElements(list: List[Int]): Int ={
-    list.length
+  def noOfElements(list: List[Int]) :Int ={
+    var count = 0
+    list match{
+      case Nil => count
+      case a::b => count += 1
+                   noOfElements(b)
+    }
   }
 
   def reverseList(list: List[Int]): List[Int] ={
-    list.reverse
+    list match{
+      case Nil => Nil
+      case a::Nil => List(a)
+      case a::b => reverseList(b) :+ a
+    }
   }
 
   def isPalindrome(list: List[Int]): Boolean ={
-    list.reverse==list
+    reverseList(list)==list
   }
 
  def flatten[Any](list: List[Any]): List[Any] = {
@@ -120,26 +136,31 @@ object Scala99List {
   }
 
   def splitList[T](list: List[T], i: Int): (List[T],List[T]) = {
-    list.splitAt(i)
+    (list,i) match{
+      case (Nil, _) => (Nil,Nil)
+      case (list,0) => (Nil,list)
+      case (head::tail,n) => val(p,q) = splitList(tail, n-1)
+                             (head::p , q)
+    }
   }
 
-  def sliceList[T](i: Int, i1: Int, list: List[T]): List[T] = {
-    list.slice(i,i1)
+  def sliceList[T](from: Int, to: Int, list: List[T]): List[T] = {
+    splitList(splitList(list,to)._1,from)._2
   }
 
 
   def rotateLeft[T](list: List[T], i: Int): List[T] = {
-    list.splitAt(i)._2 ++ list.splitAt(i)._1
+    splitList(list, i)._2 ++ splitList(list, i)._1
   }
 
 
   def removeOnlyK[T](list: List[T], k:Int): List[T] = {
-    list.splitAt(k)._1 ++ list.splitAt(k)._2.tail
+    splitList(list, k)._1 ++ splitList(list, k)._2.tail
   }
 
 
   def insertAt[T](list: List[T], position: Int, value: Int) = {
-    (list.splitAt(position)._1 :+ value) ++ list.splitAt(position)._2
+    (splitList(list, position)._1 :+ value) ++ splitList(list, position)._2
   }
 
   def listFromRange(from: Int, to: Int): List[Int] = {
@@ -175,7 +196,11 @@ object Scala99List {
 //  }
 
   def getCombinations[T](list: List[T], i: Int): List[List[T]] = {
-    list.combinations(i).toList
+    list match{
+      case head::tail if i <= 0 => List()
+      case head::tail if i== 1 => list.map(List(_))
+      case head::tail => getCombinations(tail, i-1).map(head :: _) ::: getCombinations(tail, i)
+    }
   }
 
 
@@ -189,8 +214,8 @@ object Scala99List {
     val list3 = List(List(1,2,3),List(4,5,6),List(7,8,9),10)
     val list4 = List((4,'a), (1,'b), (2,'c), (2,'a), (1,'d), (4,'e))
     val list5 = List(List(1,2),List(3),List(2,3,4,5,6), List(2,3,4))
-    lastElemet(list)          //p1
-    lastSecondElement(list)   //p2
+    println(s"last element of list is:"+lastElemet(list))         //p1
+    println(s"last second element of list is: " + lastSecondElement(list) )  //p2
     println(s"5th element is: "+findNElement(5,list))    //p3
     println(s"length of list is: "+noOfElements(list))   //p4
     println(s"the original list is: "+ list)         //p5
