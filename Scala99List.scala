@@ -23,8 +23,8 @@ object Scala99List {
     }
   }
 
+  var count = 0
   def noOfElements(list: List[Int]) :Int ={
-    var count = 0
     list match{
       case Nil => count
       case a::b => count += 1
@@ -123,17 +123,9 @@ object Scala99List {
   }
 
 
-    def removeN[T](i: Int, list: List[T]): List[T] = {
-//      for(index <- 0 to list.length) {
-//        if (index + 1 % i == 0) {
-//          val temp = list(i)
-//          list.filter(e => e == temp)
-//        }
-//        else list
-//      }
-
-      list.zipWithIndex.filterNot(e => (e._2) % i == 0).map(_._1)
-  }
+//    def removeN[T](i: Int, list: List[T]): List[T] = {
+//
+//  }
 
   def splitList[T](list: List[T], i: Int): (List[T],List[T]) = {
     (list,i) match{
@@ -164,7 +156,11 @@ object Scala99List {
   }
 
   def listFromRange(from: Int, to: Int): List[Int] = {
-    List.range(from,to)
+    (from,to) match{
+      case (0,0) => List();
+      case (from,to) if to < from => Nil
+      case (from, to) => from :: listFromRange(from+1,to)
+    }
   }
 
   def returnRandomly[T](list: List[Int], i: Int): List[Int] = {
@@ -178,11 +174,9 @@ object Scala99List {
   }
 
   def lotto(n: Int, m: Int): List[Int] ={
-    val set = (0 until(m+1)).toSet
-    var list = set.toList
-    while (list.length != n)
+    var list = listFromRange(0,m)
+    while (list.length > n)
       list = removeOnlyK(list,Random.nextInt(list.length))
-
     list
   }
 
@@ -197,8 +191,9 @@ object Scala99List {
 
   def getCombinations[T](list: List[T], i: Int): List[List[T]] = {
     list match{
+      case Nil => Nil
       case head::tail if i <= 0 => List()
-      case head::tail if i== 1 => list.map(List(_))
+      case head::tail if i == 1 => list.map(List(_))
       case head::tail => getCombinations(tail, i-1).map(head :: _) ::: getCombinations(tail, i)
     }
   }
@@ -215,11 +210,15 @@ object Scala99List {
     val list4 = List((4,'a), (1,'b), (2,'c), (2,'a), (1,'d), (4,'e))
     val list5 = List(List(1,2),List(3),List(2,3,4,5,6), List(2,3,4))
     println(s"last element of list is:"+lastElemet(list))         //p1
+
     println(s"last second element of list is: " + lastSecondElement(list) )  //p2
+
     println(s"5th element is: "+findNElement(5,list))    //p3
+
     println(s"length of list is: "+noOfElements(list))   //p4
+
     println(s"the original list is: "+ list)         //p5
-    println(s"the list after reversal is: "+ reverseList(list))
+    println(s"the list after reversal is: "+ reverseList(list))  //p5
 
     println(s"check for palindrome: " +isPalindrome(list)) //p6 false
     println(s"check for palindrome: " +isPalindrome(list2)) //p6 true
@@ -241,7 +240,7 @@ object Scala99List {
 
     println(s"duplicated elements of list appear as: " + duplicateNTimes(4,list2))    //p15
 
-    println(s"list after removing every nth element looks like: " + removeN(3,list2))     //p16   //logic -to ask
+//    println(s"list after removing every nth element looks like: " + removeN(3,list2))     //p16   //logic -to ask
 
     println(s"List after splitting into two parts is: "+ splitList(list,5))      //p17
 
@@ -263,7 +262,7 @@ object Scala99List {
 
 //    println(s"getting random permutation of list: "+ randomPermutation(list2))  //p25
 
-    println(s"list of combinations: " +getCombinations(list2,2))
+    println(s"list of combinations: " +getCombinations(list2,2))  //p26
 
     println(s"sorting by length of sublist: "+ sortByLength(list5))   //p28
   }
